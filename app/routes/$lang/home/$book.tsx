@@ -1,16 +1,18 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { json, LoaderFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { Fragment, useState } from "react";
 import i18next from "~/i18next.server";
 
-type LoaderData = { locale: string };
+type LoaderData = { locale: string; page: string };
 
-export let loader: LoaderFunction = async ({ request }) => {
+export let loader: LoaderFunction = async ({ request, params }) => {
   let locale = await i18next.getLocale(request);
-  return json<LoaderData>({ locale });
+  return json<LoaderData>({ locale, page: params.book! });
 };
 
 export default function MyModal() {
+  const { page } = useLoaderData<LoaderData>();
   let [isOpen, setIsOpen] = useState(true);
 
   function closeModal() {
@@ -60,7 +62,7 @@ export default function MyModal() {
               >
                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                    Payment successful
+                    {page.toUpperCase()}
                   </Dialog.Title>
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">
